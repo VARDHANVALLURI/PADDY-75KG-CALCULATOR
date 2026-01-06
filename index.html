@@ -221,7 +221,53 @@ let msg=
 window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 }
 </script>
+  
+ <script>
+/* ANDROID BACK BUTTON HANDLING – FARMER FRIENDLY */
+let lastBackPress = 0;
+
+/* show small toast instead of alert */
+function showExitToast() {
+  let toast = document.createElement("div");
+  toast.innerText = "యాప్ నుండి బయటకు రావాలంటే మరోసారి వెనుకకు నొక్కండి";
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
+  toast.style.background = "rgba(0,0,0,0.8)";
+  toast.style.color = "#fff";
+  toast.style.padding = "10px 15px";
+  toast.style.borderRadius = "8px";
+  toast.style.fontSize = "14px";
+  toast.style.zIndex = "9999";
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 2000);
+}
+
+/* Push initial history state */
+history.pushState(null, null, location.href);
+
+window.addEventListener("popstate", function () {
+  const now = Date.now();
+
+  if (now - lastBackPress < 2000) {
+    /* Let Android / browser handle exit */
+    navigator.app?.exitApp?.(); // works in some WebViews
+    window.close(); // fallback for TWA
+  } else {
+    lastBackPress = now;
+    showExitToast();
+    history.pushState(null, null, location.href);
+  }
+});
+</script>
+
+
 
 </body>
 </html>
+
 
